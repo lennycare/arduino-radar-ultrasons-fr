@@ -4,8 +4,8 @@
 
 Adafruit_LiquidCrystal lcd(0);
 
-const int pinSignal = 7; 
-const int pinServo = 9;
+const int pinSignal = 2; 
+const int pinServo = 3;
 
 Servo monServo;
 char carteRadar[16]; 
@@ -30,6 +30,8 @@ void loop() {
     if (commande == "start") {
       radarActif = true;
       Serial.println(">> RADAR ACTIVE");
+      monServo.write(0);
+      delay(500);
       lcd.clear();
       for(int i=0; i<16; i++) {
         carteRadar[i] = ' '; 
@@ -37,24 +39,23 @@ void loop() {
       lcd.setCursor(0,0);
       lcd.print("                ");
     }
-    else if (commande == "stop") {
-      radarActif = false;
-      monServo.write(0);
-      Serial.println(">> RADAR DESACTIVE");
-    }
   }
 
   if (radarActif) {
       // Balayage du servo de 0 à 180 degrés.
-      for (int angle = 0; angle <= 180; angle += 12) {
+      for (int angle = 0; angle <= 180 && radarActif; angle += 12) {
         effectuerMesure(angle);
+        commande_stop();
       }
-      imprimerLaCarte("ALLER");
+      if (radarActif) imprimerLaCarte("ALLER");
+
       // Balayage retour du servo de 180 à 0 degrés.
-      for (int angle = 180; angle >= 0; angle -= 12) {
+      // No need to check for commands again on the return trip, as it's fast.
+      for (int angle = 180; angle >= 0 && radarActif; angle -= 12) {
         effectuerMesure(angle);
+        commande_stop();
       }
-      imprimerLaCarte("RETOUR");
+      if (radarActif) imprimerLaCarte("RETOUR");
   }
 }
 
@@ -64,7 +65,7 @@ void effectuerMesure(int angle) {
   
   int distance = mesurerDistance();
   
-  int index = angle / 12; // Convertit l'angle (0-180) en une colonne sur l'écran (0-15).
+  int index = 15 - (angle / 12); // Convertit l'angle (0-180) en une colonne sur l'écran (0-15).
   if (index > 15) index = 15; 
   
   char symbole = determinerSymbole(distance);
@@ -110,9 +111,24 @@ char determinerSymbole(int dist) {
 
 void imprimerLaCarte(String sens) {
   Serial.print("MAP - "); Serial.print(sens);
-  Serial.print("[");
+  Serial.print("\n[");
   for (int i = 0; i < 16; i++) {
     Serial.print(carteRadar[i]); // Affiche la carte complète dans le moniteur série pour le débogage.
   }
   Serial.println("]");
+}
+
+void commande_stop() {
+  // Check for serial commands during the sweep
+  if (Serial.available() > 0) {
+    String commande = Serial.readStringUntil('\n');
+    commande.trim();
+    if (commande == "stop") {
+      radarActif = false;
+      monServo.write(0);
+      delay(500);
+      Serial.println(">> RADAR DESACTIVE");
+      lcd.print(" PRET - ATTENTE ");
+    }
+  }
 }

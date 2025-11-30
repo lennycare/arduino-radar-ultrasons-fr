@@ -16,9 +16,9 @@ Ce projet transforme une carte Arduino en un système radar simple utilisant un 
 Assurez-vous que les composants sont correctement alimentés (5V et GND).
 
 *   **Servomoteur :**
-    *   Fil de signal (orange/jaune) sur la broche `D9` de l'Arduino.
+    *   Fil de signal (orange/jaune) sur la broche `D3` de l'Arduino.
 *   **Capteur Ultrasons (HC-SR04) :**
-    *   Les broches `Trig` et `Echo` sont connectées ensemble à la broche `D7` de l'Arduino.
+    *   Les broches `Trig` et `Echo` sont connectées ensemble à la broche `D2` de l'Arduino.
 *   **Écran LCD I2C :**
     *   `SDA` sur la broche `A4` de l'Arduino (ou `SDA` sur les cartes plus récentes).
     *   `SCL` sur la broche `A5` de l'Arduino (ou `SCL` sur les cartes plus récentes).
