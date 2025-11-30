@@ -109,10 +109,10 @@ char determinerSymbole(int dist) {
 }
 
 void imprimerLaCarte(String sens) {
-  Serial.print("MAP ["); Serial.print(sens); Serial.println("] :");
-  Serial.print("|");
+  Serial.print("MAP - "); Serial.print(sens);
+  Serial.print("[");
   for (int i = 0; i < 16; i++) {
     Serial.print(carteRadar[i]); // Affiche la carte complète dans le moniteur série pour le débogage.
   }
-  Serial.println("|");
+  Serial.println("]");
 }
