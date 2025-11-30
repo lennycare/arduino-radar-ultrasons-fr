@@ -6,6 +6,7 @@ Adafruit_LiquidCrystal lcd(0);
 
 const int pinSignal = 2; 
 const int pinServo = 3;
+const int led = 5;
 
 Servo monServo;
 char carteRadar[16]; 
@@ -20,6 +21,7 @@ void setup() {
   Serial.println("SYSTEME RADAR INITIALISE");
   Serial.println("Tapez 'start' pour commencer et 'stop' pour arreter.");
   lcd.print(" PRET - ATTENTE ");
+  pinMode(led, OUTPUT);
 }
 
 void loop() {
@@ -45,6 +47,7 @@ void loop() {
       // Balayage du servo de 0 à 180 degrés.
       for (int angle = 0; angle <= 180 && radarActif; angle += 12) {
         effectuerMesure(angle);
+        alarm();
         commande_stop();
       }
       if (radarActif) imprimerLaCarte("ALLER");
@@ -53,6 +56,7 @@ void loop() {
       // No need to check for commands again on the return trip, as it's fast.
       for (int angle = 180; angle >= 0 && radarActif; angle -= 12) {
         effectuerMesure(angle);
+        alarm();
         commande_stop();
       }
       if (radarActif) imprimerLaCarte("RETOUR");
@@ -132,3 +136,12 @@ void commande_stop() {
     }
   }
 }
+void alarm(){
+  int d=mesurerDistance();
+  if (d<10&&d>0){
+    digitalWrite(led, HIGH);
+    delay(150);
+    digitalWrite(led, LOW);
+    delay(150);
+  }
+ }
