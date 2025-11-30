@@ -1,4 +1,4 @@
-<div style="text-align: center;">
+<div align="center">
   <a href="README.md">Read in English</a>
 </div>
 
